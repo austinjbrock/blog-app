@@ -1,24 +1,58 @@
-fetch('https://apis.scrimba.com/jsonplaceholder/posts',{method: "GET"})
-.then(res => res.json())
-.then(data => {
-   //name our data reference
-   let postArray = data.slice(0,8)
-   //name where we will put the data
-   let container = document.getElementById('blog-list')
-   //name a variable we can update
-   let postHtml = ''
+let postsArray = []
 
-   //loop over the list of posts until we hit our desired numbers
-   for (const post of postArray) {
-      //update our variable with the html tags we want to create and pass in our content
-      postHtml += `
-         <h2 class="title post">${post.title}</h2>
-         <p class="body" post>${post.body}</p>
-         <hr />
-         `
+const titleInput = document.getElementById('post-title')
+const bodyInput = document.getElementById('post-body')
+
+function renderPosts (){
+      let postHtml = ''
+      for (const post of postArray) {
+         postHtml += `
+            <h2 class="title post">${post.title}</h2>
+            <p class="body" post>${post.body}</p>
+            <hr />
+            `
+      }
+      document.getElementById("blog-list").innerHTML = postHtml
    }
 
-   // inject our new data into our page
-   container.innerHTML = postHtml
 
-})
+   fetch('https://apis.scrimba.com/jsonplaceholder/posts',{method: "GET"})
+   .then(res => res.json())
+   .then(data => {      
+         postArray = data.slice(0,5)
+         renderPosts()
+
+      })
+
+   document.getElementById('post-btn').addEventListener('click',function(e){
+      e.preventDefault()
+      const postTitle = titleInput.value
+      const postBody = bodyInput.value
+      const postData = {
+         title: postTitle,
+         body: postBody
+      }
+      
+
+      fetch('https://apis.scrimba.com/jsonplaceholder/posts',{
+      method: 'POST',
+      body: JSON.stringify(postData),
+
+         headers: {'Content-Type' : 'Application/json'}
+      })
+      .then(res => res.json())
+      .then( postData => {
+            postArray.unshift(postData)
+         renderPosts()
+      })
+      titleInput.value = ''
+      bodyInput.value = ''
+   
+   })
+
+
+
+
+
+
+
